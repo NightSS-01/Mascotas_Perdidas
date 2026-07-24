@@ -19,6 +19,34 @@ function ListarMascotas() {
             const response = await mascotasApi.get("mascotas/");
             setMascotas(response.data);
         }  catch (error) {
+            // Se extrae status y data de la respuesta del error para no exponer
+            // detalles técnicos al usuario
+            const status = error.response?.status;
+            const data = error.response?.data;
+
+            let mensaje = "No se pudo cargar la lista de mascotas. Intenta nuevamente más tarde.";
+            // Se traduce cada código de estado a un mensaje para el usuario
+            if (status === 400) {
+                mensaje = "La solicitud no es válida. Verifica los datos e intenta nuevamente.";
+            } else if (status === 401) {
+                mensaje = "Debes iniciar sesión para ver esta información.";
+            } else if (status === 403) {
+                mensaje = "No tienes permisos para acceder a esta información.";
+            } else if (status === 404) {
+                mensaje = "No se encontró información de mascotas.";
+            } else if (status >= 500) {
+                mensaje = "Ocurrió un problema en el servidor. Intenta más tarde.";
+            } else if (!error.response) {
+                // No hubo respuesta del servidor (problema de red o conexión)
+                mensaje = "No se pudo conectar con el servidor. Revisa tu conexión a internet.";
+            }
+
+            if (data?.detail) {
+            mensaje = data.detail;
+
+            }
+
+
             console.log(error);
             setFetchError(true);
         } finally {
@@ -51,6 +79,7 @@ function ListarMascotas() {
         </div>
     );
 
+    // Posiciones, tamaños y rotaciones predefinidos para las huellas decorativas del header
     const patitas = [
         { top: "8%", left: "5%", size: "26px", rotate: "-20deg" },
         { top: "18%", left: "15%", size: "16px", rotate: "40deg" },
