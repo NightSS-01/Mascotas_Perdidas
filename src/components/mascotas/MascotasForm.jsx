@@ -29,6 +29,7 @@ function MascotasForm({ onAdd }) {
      // para poder mostrarla antes de enviarla
     const [preview, setPreview] = useState(null);
 
+    const [errorChoices, setErrorChoices] = useState(null)
     const fetchChoices = async () => {
         try {
             const response = await mascotasApi.get("choices/");
@@ -37,9 +38,23 @@ function MascotasForm({ onAdd }) {
             setTipoMascota(response.data.tipo_animal);
             setSexo(response.data.sexo);
             setTamano(response.data.tamano);
+            setErrorChoices(null);
         } catch (error) {
-            console.log(error)
-        }
+
+             // manejo de errores diferenciado 400 (validación) y 404 (no encontrado).
+             // sin mostrarle al usuario el mensaje técnico crudo de la petición
+            const status = error.response?.status;
+            const data = error.response?.data;
+
+            if (status === 404){
+                setErrorChoices("No se encontraron las opciones para completar le formulario.");
+            } else if (status === 400){
+                setErrorChoices("La solicitud de opciones no es válida. Intenta recargar la página.")
+            } else {
+                setErrorChoices("No se pudieron cargar las opciones del formulario. Intenta nuevamente más tarde.")
+            }
+            console.log(status, data); // el detalle técnico solo queda en consola, no se muestra al usuario
+        }   
     }
 
     useEffect(() => {
@@ -102,9 +117,6 @@ function MascotasForm({ onAdd }) {
                         onClick={HandleImageAreaCLick}
                         role="button" // accesibilidad, para que se comporte como botón
                         tabIndex={0} // permite enfocar el div con teclado (tab)
-                        onKeyDown={(e) => { // permite ejecutar el click con enter o espacio, no solo mouse
-                            if (e.key === "Enter" || e.key === " ") HandleImageAreaCLick();
-                        }}
                     >
                         {preview ? ( // si ya hay una imagen elegida, se muestr el preview
                             <img 
