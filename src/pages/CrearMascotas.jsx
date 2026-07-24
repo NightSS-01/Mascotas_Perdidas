@@ -1,4 +1,5 @@
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { data, useNavigate } from "react-router-dom";
 import mascotasApi from "../api/api";
 import MascotasForm from "../components/mascotas/MascotasForm";
 
@@ -7,7 +8,7 @@ import MascotasForm from "../components/mascotas/MascotasForm";
 function CrearMascotas() {
     const navigate = useNavigate();
     const COLOR_PRINCIPAL = "#4a5d43";
-
+    const [error, setError] = useState(null);
     const addMascota = async (mascota) => {
          // esta función reemplaza a "addMascotas" que antes vivia en MascotasPage.jsx
          // se la pasa a MascotasFOrm como prop "onAdd", igual que antes
@@ -15,8 +16,18 @@ function CrearMascotas() {
             await mascotasApi.post("mascotas/", mascota);
             navigate("/");
         } catch (error) {
-            console.log(error);
+            const status = error.response?.status;
+            const data = error.response?.data;
+ 
+            if (status === 400) {
+                setError("Revisa los datos del formulario: hay campos inválidos o incompletos.");
+            } else if (status === 404) {
+                setError("No se encontró el recurso para registrar la mascota.");
+            } else {
+                setError("Ocurrió un error inesperado al registrar la mascota. Intenta nuevamente más tarde.");
+            }
         }
+        console.log(status, data);
     };
     return (
         <div
