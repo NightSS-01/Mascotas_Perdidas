@@ -11,7 +11,7 @@ function ListarMascotas() {
     
     const navegar = useNavigate();
     const handleClick = () => {
-        navegar("/mascotas/crear")
+        navegar("/crear")
     };
 
     const fetchMascotas = async () => {
