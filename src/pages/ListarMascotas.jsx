@@ -1,12 +1,18 @@
+import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import mascotasApi from "../api/api";
 import MascotasList from "../components/mascotas/MascotasList";
 import logo from "../assets/logo.png"
-
+import CrearMascotas from "./CrearMascotas";
 function ListarMascotas() {
-    const [mascotas, setmMascotas] = useState([]);
+    const [mascotas, setMascotas] = useState([]);
     const [fetchError, setFetchError] = useState(false);
     const [loading, setLoading] = useState(true);
+    
+    const navegar = useNavigate();
+    const handleClick = () => {
+        navegar("/mascotas/crear")
+    };
 
     const fetchMascotas = async () => {
         try {
@@ -136,6 +142,7 @@ function ListarMascotas() {
                         <button
                             type="button"
                             className="btn"
+                            onClick={handleClick}
                             style={{
                                 backgroundColor: "#4a5d43",
                                 color: "#ffffff",
@@ -146,7 +153,8 @@ function ListarMascotas() {
                                 borderRadius: "8px",
                                 border: "none",
                                 whiteSpace: "nowrap"
-                            }}  
+                            }}
+
                         >
                             + Publicar mascota
                         </button>
