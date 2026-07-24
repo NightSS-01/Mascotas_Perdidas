@@ -1,9 +1,14 @@
+ // se agrego useRef para controlar el input de archivo de forma pragmática
+ // (fileInputRef)
 import { useEffect, useState, useRef } from "react";
 import mascotasApi from "../../api/api";
-
+ // se agrego esta constante para aplicar el color de todo el formulario
+ // via style line (ya que el proyecto usa bootstrap)
 const COLOR_PRINCIPAL = "#4a5d43";
 
 function MascotasForm({ onAdd }) {
+     // se agrego esta constanto para poder hacer referencia
+     // al <input types="file"> oculto, para poder "clickear" desde el div de la imagen
     const fileInputRef = useRef(null);
 
     const [estados, setEstados] = useState([]);
@@ -20,7 +25,8 @@ function MascotasForm({ onAdd }) {
     const [selectedSexo, setSexoSeleccionado] = useState("");
     const [selectedTamano, setTamanoSeleccionado] = useState("");
     const [imagen, setImagen] = useState(null);
-
+     // se agrego el estado preview para guardar la URL temporal de la imagen
+     // para poder mostrarla antes de enviarla
     const [preview, setPreview] = useState(null);
 
     const fetchChoices = async () => {
@@ -40,16 +46,23 @@ function MascotasForm({ onAdd }) {
         fetchChoices();
     }, [])
 
+     // Esto limpia la url temporal de la imagen cuando el componente se desmonta
+     // o cuando cambia el preview
+     // para no dejar URLs de objeto (blob:) ocupando memoria en el navegador
     useEffect(()=> {
         return()=> {
             if(preview) URL.revokeObjectURL(preview)
         }
     }, [preview]);
 
+     // dispara el click del input de archivo oculto cuando el usuario hace click
+     // en el recuadro de la imagen
     const HandleImageAreaCLick = () => {
         fileInputRef.current?.click();
     };
 
+     // reemplaza la lógica que antes vivía directo en el onChange del <input type="file">
+     // ahora, además de guardar el archivo, genera una URL de preview con URL.createObject
     const HandleImageChange = (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -60,8 +73,6 @@ function MascotasForm({ onAdd }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        // console.log(imagen);
         
         const formData = new FormData();
         formData.append("nombre", nombre);
@@ -78,27 +89,30 @@ function MascotasForm({ onAdd }) {
     }
 
     return (
+        // el form ya no tiene sus label apilador uno de bajo de otro
+        // ahora usa el sistema de grid de bootstrap para separar imagen y datos en columnas
         <form onSubmit={handleSubmit} encType="multipart/form-data">
             <div className="row g-4">
                 {/*image*/}
                 <div className="col-12 col-md-4">
                     <div 
+                         // div clickeable que reemplaza el input de archivo visible del original
                         className="rounded-4 d-flex align-items-center justify-content-center bg-light"
                         style={{border: `2px solid ${COLOR_PRINCIPAL}`, aspectRatio: "0.9/1.2"}}
                         onClick={HandleImageAreaCLick}
-                        role="button"
-                        tabIndex={0}
-                        onKeyDown={(e) => {
+                        role="button" // accesibilidad, para que se comporte como botón
+                        tabIndex={0} // permite enfocar el div con teclado (tab)
+                        onKeyDown={(e) => { // permite ejecutar el click con enter o espacio, no solo mouse
                             if (e.key === "Enter" || e.key === " ") HandleImageAreaCLick();
                         }}
                     >
-                        {preview ? (
+                        {preview ? ( // si ya hay una imagen elegida, se muestr el preview
                             <img 
                                 src={preview}
                                 alt="Vista previa de la mascota"
                                 className="w-100 h-100 rounded-4 object-fit-fill"
                             />
-                        ):(
+                        ):( // si no hay imagen, se muestra un placeholder con icono "+" y texto de ayuda
                             <div className="text-center p-4" style={{color: COLOR_PRINCIPAL}}>
                                 <span
                                     className="rounded-circle d-inline-flex align-items-center justify-content-center mb-2 p-3 fs-3"
@@ -110,16 +124,16 @@ function MascotasForm({ onAdd }) {
                             </div>
                         )}
                         <input 
-                            ref={fileInputRef}
+                            ref={fileInputRef} // conecta este input con fileInputRef
                             type="file"
-                            accept="image/*"
+                            accept="image/*" // filtra el selecto de archivo para que solo muestre imágenes
                             onChange={HandleImageChange}
                             className="d-none"
                         />
                     </div>
                 </div>    
                 {/* toda la parte de arriba es para el recuadro de subir foto */}
-                {/* Datos*/}
+                {/* Datos: Aqui solamente se estilizo el formulario*/}
                 <div className="col-12 col-md-8">
                     <div className="mb-3">
                         <label className="form-label fw-semibold">Nombre</label>

@@ -60,7 +60,7 @@ function MascotasDetail() {
         if (window.confirm("¿Estás seguro de que deseas eliminar esta publicación?")) {
             try {
                 await mascotasApi.delete(`mascotas/${id}/`);
-                navigate("/mascotas");
+                navigate("/");
             } catch (error) {
                 alert("Error al eliminar la mascota:");
             }
@@ -110,7 +110,7 @@ function MascotasDetail() {
                 <h2 className="fw-bold text-danger">Error {errorStatus}</h2>
                 <p className="text-muted">{errorMessage}</p>
                 <div>
-                    <Link to="/mascotas" className="btn rounded-pill text-white fw-bold px-4" style={{ backgroundColor: COLOR_PRINCIPAL }}>
+                    <Link to="/" className="btn rounded-pill text-white fw-bold px-4" style={{ backgroundColor: COLOR_PRINCIPAL }}>
                         Volver a la lista
                     </Link>
                 </div>
@@ -123,7 +123,7 @@ function MascotasDetail() {
         <div className="card shadow-sm border-0 rounded-4 p-4 bg-white">
             {/* Botón Volver */}
             <div className="mb-3">
-                <Link to="/mascotas" className="text-decoration-none fw-bold" style={{ color: COLOR_PRINCIPAL }}>
+                <Link to="/" className="text-decoration-none fw-bold" style={{ color: COLOR_PRINCIPAL }}>
                     &larr; Volver a la lista
                 </Link>
             </div>
