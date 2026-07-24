@@ -90,7 +90,7 @@ function ListarMascotas() {
                         userSelect: "none"
                     }}
                 >
-
+                    🐾
                 </span>
             ))}
 
