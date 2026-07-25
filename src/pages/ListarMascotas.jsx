@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+
 import { useEffect, useState } from "react";
 import mascotasApi from "../api/api";
 import MascotasList from "../components/mascotas/MascotasList";
@@ -8,10 +8,12 @@ function ListarMascotas() {
     const [mascotas, setMascotas] = useState([]);
     const [fetchError, setFetchError] = useState(false);
     const [loading, setLoading] = useState(true);
-    
-    const navegar = useNavigate();
+     //controla si el modal esta abierto o cerrado
+    const [mostrarFormulario, setMostrarFormulario] = useState(false);
+     // en ves de navegar a "/crear", ahora abre el modal
+
     const handleClick = () => {
-        navegar("/crear")
+        setMostrarFormulario(true)
     };
 
     const fetchMascotas = async () => {
@@ -59,7 +61,7 @@ function ListarMascotas() {
     }, []);
 
     const handleAdd = (nuevaMascota) => {
-        setMascotas(prev => [...prev, nuevaMascota]);
+        setMascotas(prev => [nuevaMascota, ...prev]);
     }
 
     if (loading) return (
@@ -191,11 +193,20 @@ function ListarMascotas() {
 
                     </div>
                 </header>
-                
+            
 
             <div className="container py-5">
                 <MascotasList lista={mascotas} onAdd={handleAdd} />
             </div>
+            {/* el modal de "RegistrarMascota" se renderiza encima de todo lo demás,
+            solo cuando mostrarFormulario es true. Al crear la mascota (onCreated) se agrega
+            a la lista con handleAdd, y onClose cierra el modal en ambos casos (éxito o cancelar) */}
+            {mostrarFormulario && (
+                <CrearMascotas 
+                    onClose={()=> setMostrarFormulario(false)}
+                    onCreated={handleAdd}
+                />
+            )}
         </div>
     )
 
