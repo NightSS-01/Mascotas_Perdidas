@@ -1,5 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, NavLink } from "react-router-dom";
-import MascotasDetail from "./components/mascotas/MascotasDetail";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import ListarMascotas from "./pages/ListarMascotas";
 import MascotasDetalles from "./pages/MascotaDetalles";
 

@@ -19,7 +19,7 @@ function MascotasDetail() {
     const [nuevoContenido, setNuevoContenido] = useState("");
     const [nuevoEstado, setNuevoEstado] = useState("");
 
-    // obtener detalles (GET)
+    // este es para usarse en handleCambiarEstado, handleAgregarComentario y handleEliminarComentario
     const fetchMascotaDetail = async () => {
         setLoading(true);
         try {
@@ -40,8 +40,38 @@ function MascotasDetail() {
         }
     };
 
+    // obtener detalles (GET)
     useEffect(() => {
-        fetchMascotaDetail();
+        let ignore = false;
+        const CargarMascota = async () => {
+        setLoading(true);
+            try {
+                const response = await mascotasApi.get(`mascotas/${id}/`);
+                if(!ignore){
+                    setMascota(response.data);
+                    setNuevoEstado(response.data.estado || "");
+                    setErrorStatus(null);
+                }
+            } catch (error) {
+                if(!ignore) {
+                    const status = error.response?.status;
+                    setErrorStatus(status);
+                    if (status === 404) {
+                        setErrorMessage("La mascota solicitada no fue encontrada.");
+                    } else {
+                        setErrorMessage("Ocurrió un error al cargar la información. Intente más tarde.");
+                    }
+                }
+            } finally {
+                if(!ignore){
+                    setLoading(false);
+                }
+            }
+        };
+        CargarMascota();
+        return() => {
+            ignore = true;
+        }
     }, [id]);
 
     // para actualizar estado (aplicando PATCH)
@@ -62,7 +92,7 @@ function MascotasDetail() {
                 await mascotasApi.delete(`mascotas/${id}/`);
                 navigate("/");
             } catch (error) {
-                alert("Error al eliminar la mascota:");
+                alert("Error al eliminar la mascota: " + (error.response?.data?.detail || "Error de servidor"));
             }
         }
     };
@@ -81,7 +111,7 @@ function MascotasDetail() {
             setNuevoContenido("");
             fetchMascotaDetail();
         } catch (error) {
-            alert("Error al agregar el comentario.");
+            alert("Error al agregar el comentario: " + (error.response?.data?.detail || "Error de servidor"));
         }
     };
 
@@ -91,7 +121,7 @@ function MascotasDetail() {
             await mascotasApi.delete(`comentarios/${comentarioId}/`);
             fetchMascotaDetail();
         } catch (error) {
-            alert("Error al eliminar el comentario.");
+            alert("Error al eliminar el comentario: "+ (error.response?.data?.detail || "Error de servidor"));
         }
     };
 
