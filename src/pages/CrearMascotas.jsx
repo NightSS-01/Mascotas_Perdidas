@@ -1,20 +1,18 @@
 import { useState } from "react";
-import { data, useNavigate } from "react-router-dom";
 import mascotasApi from "../api/api";
 import MascotasForm from "../components/mascotas/MascotasForm";
 
- // esta pagina se creo para separa ListarMascotas del formulario
- // ahora esta pagina vive aparte y solo se encarga de la creación.
-function CrearMascotas() {
-    const navigate = useNavigate();
+// esta página deja de ser una ruta aparte (no usa navigate)
+// ahora se muestra como modal/overlay flotante encima de ListarMascota
+function CrearMascotas({ onClose, onCreated}) {
     const COLOR_PRINCIPAL = "#4a5d43";
     const [error, setError] = useState(null);
     const addMascota = async (mascota) => {
-         // esta función reemplaza a "addMascotas" que antes vivia en MascotasPage.jsx
-         // se la pasa a MascotasFOrm como prop "onAdd", igual que antes
+        setError(null);
         try {
-            await mascotasApi.post("mascotas/", mascota);
-            navigate("/");
+            const response = await mascotasApi.post("mascotas/", mascota);
+            onCreated?.(response.data); // le pasa la mascota recién creada al padre
+            onClose(); // antes era navigate("/") ahora simplemente cierra el modal
         } catch (error) {
             const status = error.response?.status;
             const data = error.response?.data;
@@ -30,20 +28,39 @@ function CrearMascotas() {
         console.log(status, data);
     };
     return (
+         // overlay que cubre toda la pantalla, con fondo semi-transparente detrás del modal.
+         // si el usuario hace click fuera de la tarjeta (en el fondo), se cierra el modal.
         <div
-            style={{
-                minHeight: "100vh",
-                background: `linear-gradient(180deg, ${COLOR_PRINCIPAL} 0%, #ffffff 60%)`,
-            }}
+            className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center p-3"
+            style={{backgroundColor: "rgba(0, 0, 0, 0.5",zIndex: 1050}}
+            onClick={onClose}
         >
-            <div className="container py-5">
-                <h1 className="fw-bold mb-4 text-center text-white">Registrar una nueva mascota</h1>
- 
-                <div className="card border-0 bg-transparent">
-                    <div className="card-body">
-                        <MascotasForm onAdd={addMascota} />
-                    </div>
+            <div 
+                className="card border-0 shadow"
+                style={{
+                    width: "100%",
+                    maxWidth: "900px",
+                    maxHeight: "90vh",
+                    overflowY: "auto",
+                    background: `linear-gradient(180deg, ${COLOR_PRINCIPAL} 0%, #ffffff 60%)`
+                }}
+                onClick={(e) => e.stopPropagation()}
+            >
+                <div className="d-flex justify-content-end">
+                    <button
+                        type="button"
+                        className="btn-close btn-close-white"
+                        aria-label="Cerrar"
+                        onClick={onClose}
+                    ></button>
                 </div>
+                <h1 className="fw-bold mb-4 text-center text-white">Registrar una nueva mascota</h1>
+                {error && (
+                    <div className="alert alert-danger" role="alert">
+                        {error}
+                    </div>
+                )}
+                <MascotasForm onAdd={addMascota} />
             </div>
         </div>
     );

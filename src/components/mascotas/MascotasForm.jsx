@@ -107,7 +107,7 @@ function MascotasForm({ onAdd }) {
         // el form ya no tiene sus label apilador uno de bajo de otro
         // ahora usa el sistema de grid de bootstrap para separar imagen y datos en columnas
         <form onSubmit={handleSubmit} encType="multipart/form-data">
-            <div className="row g-4">
+            <div className="row g-3 p-5">
                 {/*image*/}
                 <div className="col-12 col-md-4">
                     <div 
