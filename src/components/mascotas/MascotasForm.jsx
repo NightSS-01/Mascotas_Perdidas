@@ -30,35 +30,39 @@ function MascotasForm({ onAdd }) {
     const [preview, setPreview] = useState(null);
 
     const [errorChoices, setErrorChoices] = useState(null)
-    const fetchChoices = async () => {
-        try {
-            const response = await mascotasApi.get("choices/");
-            console.log(response.data.estado);
-            setEstados(response.data.estado);
-            setTipoMascota(response.data.tipo_animal);
-            setSexo(response.data.sexo);
-            setTamano(response.data.tamano);
-            setErrorChoices(null);
-        } catch (error) {
-
-             // manejo de errores diferenciado 400 (validación) y 404 (no encontrado).
-             // sin mostrarle al usuario el mensaje técnico crudo de la petición
-            const status = error.response?.status;
-            const data = error.response?.data;
-
-            if (status === 404){
-                setErrorChoices("No se encontraron las opciones para completar le formulario.");
-            } else if (status === 400){
-                setErrorChoices("La solicitud de opciones no es válida. Intenta recargar la página.")
-            } else {
-                setErrorChoices("No se pudieron cargar las opciones del formulario. Intenta nuevamente más tarde.")
-            }
-            console.log(status, data); // el detalle técnico solo queda en consola, no se muestra al usuario
-        }   
-    }
-
     useEffect(() => {
+        let ignore = false;
+        const fetchChoices = async () => {
+            try {
+                const response = await mascotasApi.get("choices/");
+                console.log(response.data.estado);
+                if(!ignore){
+                    setEstados(response.data.estado);
+                    setTipoMascota(response.data.tipo_animal);
+                    setSexo(response.data.sexo);
+                    setTamano(response.data.tamano);
+                    setErrorChoices(null);
+                }
+            } catch (error) {
+
+                 // manejo de errores diferenciado 400 (validación) y 404 (no encontrado).
+                 // sin mostrarle al usuario el mensaje técnico crudo de la petición
+                const status = error.response?.status;
+                const data = error.response?.data;
+                if(!ignore) {
+                    if (status === 404){
+                        setErrorChoices("No se encontraron las opciones para completar le formulario.");
+                    } else if (status === 400){
+                        setErrorChoices("La solicitud de opciones no es válida. Intenta recargar la página.")
+                    } else {
+                        setErrorChoices("No se pudieron cargar las opciones del formulario. Intenta nuevamente más tarde.")
+                    }
+                }
+                console.log(status, data); // el detalle técnico solo queda en consola, no se muestra al usuario                    
+            }   
+        }
         fetchChoices();
+        return () => {ignore = true};
     }, [])
 
      // Esto limpia la url temporal de la imagen cuando el componente se desmonta
@@ -147,6 +151,11 @@ function MascotasForm({ onAdd }) {
                 {/* toda la parte de arriba es para el recuadro de subir foto */}
                 {/* Datos: Aqui solamente se estilizo el formulario*/}
                 <div className="col-12 col-md-8">
+                    {errorChoices && (
+                        <div className="alert alert-warning" role="alert">
+                            {errorChoices}
+                        </div>
+                    )}
                     <div className="mb-3">
                         <label className="form-label fw-semibold">Nombre</label>
                         <input 

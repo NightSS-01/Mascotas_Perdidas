@@ -15,8 +15,7 @@ function CrearMascotas({ onClose, onCreated}) {
             onClose(); // antes era navigate("/") ahora simplemente cierra el modal
         } catch (error) {
             const status = error.response?.status;
-            const data = error.response?.data;
- 
+            
             if (status === 400) {
                 setError("Revisa los datos del formulario: hay campos inválidos o incompletos.");
             } else if (status === 404) {
@@ -25,7 +24,7 @@ function CrearMascotas({ onClose, onCreated}) {
                 setError("Ocurrió un error inesperado al registrar la mascota. Intenta nuevamente más tarde.");
             }
         }
-        console.log(status, data);
+        console.log(status);
     };
     return (
          // overlay que cubre toda la pantalla, con fondo semi-transparente detrás del modal.

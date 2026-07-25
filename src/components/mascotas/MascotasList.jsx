@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-function MascotasList({ lista, onAdd }) {
+function MascotasList({ lista }) {
 
     const badgeColor = (estado) => {
         const map = {

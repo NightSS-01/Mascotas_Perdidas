@@ -1,5 +1,3 @@
-import { useNavigate } from "react-router-dom";
-import mascotasApi from "../api/api";
 import MascotasDetail from "../components/mascotas/MascotasDetail";
 
 function MascotasDetalles() {
