@@ -1,7 +1,7 @@
 ## Instrucciones de uso
 Para poder correr el programa necesita:
-- git clone https://github.com/NightSS-01/Mascotas_Perdidas.git
-- dar segundo click en la carpeta abierta de Mascotas_Perdidas y ejecutar la terminal, luego escribir en la terminar **"code."**
+- abrir la terminar y poner el comando `git clone https://github.com/NightSS-01/Mascotas_Perdidas.git`
+- dar segundo click en la carpeta abierta de Mascotas_Perdidas y ejecutar la terminal, luego escribir en la terminar `code .`
 #### Abrir terminal de vscode en bash y poner los siguientes comandos
 - npm install (ya que en el repositorio no se sube node_modules)
 - npm install bootstrap
