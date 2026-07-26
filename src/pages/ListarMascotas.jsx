@@ -8,6 +8,8 @@ function ListarMascotas() {
     const [mascotas, setMascotas] = useState([]);
     const [fetchError, setFetchError] = useState(null);
     const [loading, setLoading] = useState(true);
+     // guarda el texto que el usuario escribe en la barra de busqueda
+    const [busqueda, setBusqueda] = useState("");
      //controla si el modal esta abierto o cerrado
     const [mostrarFormulario, setMostrarFormulario] = useState(false);
      // en ves de navegar a "/crear", ahora abre el modal
@@ -68,6 +70,9 @@ function ListarMascotas() {
         setMascotas(prev => [nuevaMascota, ...prev]);
     }
 
+    const mascotasFiltradas = mascotas.filter((m) =>
+        m.nombre?.toLowerCase().includes(busqueda.toLocaleLowerCase())
+    );
     if (loading) return (
         <div className="d-flex justify-content-center align-items-center py-5">
             <div className="spinner-border text-primary me-2" role="status">
@@ -157,7 +162,7 @@ function ListarMascotas() {
                 </p>
 
                  <div className="d-flex flex-wrap justify-content-center align-items-center gap-3">
-                        <form className="d-flex" style={{ width: "100%", maxWidth: "480px" }}>
+                        <form className="d-flex" style={{ width: "100%", maxWidth: "480px" }} onSubmit={(e) => e.preventDefault()}>
                             <div className="input-group">
                                 <span
                                     className="input-group-text bg-white border-end-0"
@@ -170,6 +175,8 @@ function ListarMascotas() {
                                     className="form-control border-start-0"
                                     placeholder="Buscar mascota"
                                     style={{ borderColor: "#d8ded4" }}
+                                    value={busqueda}
+                                    onChange={(e) => setBusqueda(e.target.value)}
                                 />
                             </div>
                         </form>
@@ -200,7 +207,7 @@ function ListarMascotas() {
             
 
             <div className="container py-5">
-                <MascotasList lista={mascotas} onAdd={handleAdd} />
+                <MascotasList lista={mascotasFiltradas} onAdd={handleAdd} />
             </div>
             {/* el modal de "RegistrarMascota" se renderiza encima de todo lo demás,
             solo cuando mostrarFormulario es true. Al crear la mascota (onCreated) se agrega
